@@ -36,8 +36,10 @@ class OpenTracingMiddleware(MiddlewareMixin):
         - Also, better to have try/catch with empty tracer or just fail
           fast if there's no tracer specified
         '''
+        self.
         self._init_tracing()
-        self._tracing = settings.OPENTRACING_TRACING
+        # self._tracing = settings.OPENTRACING_TRACING
+        self._tracing = None
         self.get_response = get_response
 
     def _init_tracing(self):
@@ -115,6 +117,8 @@ class OpenTracingMiddleware(MiddlewareMixin):
         if getattr(settings, 'OPENTRACING_SET_GLOBAL_TRACER', False):
             initialize_global_tracer(tracing)
 
+        return tracer
+
     def process_view(self, request, view_func, view_args, view_kwargs):
         # determine whether this middleware should be applied
         # NOTE: if tracing is on but not tracing all requests, then the tracing
@@ -126,7 +130,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
         if self._tracing is None:
             print("initialize tracing")
             log.info("initialize tracing")
-            self._init_tracing()
+            self._tracing = self._init_tracing()
 
         if not self._tracing._trace_all:
             print("tracing failed to initialize")
