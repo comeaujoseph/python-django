@@ -42,6 +42,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
 
     def _init_tracing(self):
         log.info("_init_tracing TRACING")
+        print("_init_tracing TRACING")
 
         if getattr(settings, 'OPENTRACING_TRACER', None) is not None:
             # Backwards compatibility.
@@ -119,13 +120,16 @@ class OpenTracingMiddleware(MiddlewareMixin):
         # NOTE: if tracing is on but not tracing all requests, then the tracing
         # occurs through decorator functions rather than middleware
 
+        print("PROCESS VIEW TRACING")
         log.info("PROCESS VIEW TRACING")
 
         if self._tracing is None:
+            print("initialize tracing")
             log.info("initialize tracing")
             self._init_tracing()
 
         if not self._tracing._trace_all:
+            print("tracing failed to initialize")
             log.info("tracing failed to initialize")
             return None
 
