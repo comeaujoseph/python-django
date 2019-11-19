@@ -58,7 +58,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
 
             # override the DjangoTracing used with jaeger tracer
             jaeger_config = Config(config=settings.OPENTRACING_TRACER_CONFIG, service_name=settings.SERVICE_NAME)
-            DjangoTracing(jaeger_config.initialize_tracer())
+            tracing = DjangoTracing(jaeger_config.initialize_tracer())
 
         # trace_all defaults to True when used as middleware.
         tracing._trace_all = getattr(settings, 'OPENTRACING_TRACE_ALL', True)
@@ -82,7 +82,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
         if self._tracing is None:
             print("initialize tracing")
             self._init_tracing()
-        
+
         if not self._tracing._trace_all:
             print("tracing failed to initialize")
             return None
