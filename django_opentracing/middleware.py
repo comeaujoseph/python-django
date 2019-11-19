@@ -1,5 +1,11 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
+import logging
+
+log_level = logging.DEBUG
+logging.getLogger('').handlers = []
+logging.basicConfig(format='%(asctime)s %(message)s', level=log_level)
+log = logging.getLogger()
 
 from .tracing import DjangoTracing
 from .tracing import initialize_global_tracer
@@ -35,7 +41,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def _init_tracing(self):
-        print("_init_tracing TRACING")
+        log.info("_init_tracing TRACING")
 
         if getattr(settings, 'OPENTRACING_TRACER', None) is not None:
             # Backwards compatibility.
@@ -113,14 +119,14 @@ class OpenTracingMiddleware(MiddlewareMixin):
         # NOTE: if tracing is on but not tracing all requests, then the tracing
         # occurs through decorator functions rather than middleware
 
-        print("PROCESS VIEW TRACING")
+        log.info("PROCESS VIEW TRACING")
 
         if self._tracing is None:
-            print("initialize tracing")
+            log.info("initialize tracing")
             self._init_tracing()
 
         if not self._tracing._trace_all:
-            print("tracing failed to initialize")
+            log.info("tracing failed to initialize")
             return None
 
         if hasattr(settings, 'OPENTRACING_TRACED_ATTRIBUTES'):
