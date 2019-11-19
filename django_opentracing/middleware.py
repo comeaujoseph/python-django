@@ -144,8 +144,16 @@ class OpenTracingMiddleware(MiddlewareMixin):
         self._tracing._apply_tracing(request, view_func, traced_attributes)
 
     def process_exception(self, request, exception):
+        if self._tracing is None:
+            print("initialize tracing")
+            log.info("initialize tracing")
+            self._tracing = self._init_tracing()
         self._tracing._finish_tracing(request, error=exception)
 
     def process_response(self, request, response):
+        if self._tracing is None:
+            print("initialize tracing")
+            log.info("initialize tracing")
+            self._tracing = self._init_tracing()
         self._tracing._finish_tracing(request, response=response)
         return response
