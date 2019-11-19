@@ -116,7 +116,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
         if getattr(settings, 'OPENTRACING_SET_GLOBAL_TRACER', False):
             initialize_global_tracer(tracing)
 
-        return tracer
+        return tracing
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         # determine whether this middleware should be applied
