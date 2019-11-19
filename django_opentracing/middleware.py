@@ -78,7 +78,13 @@ class OpenTracingMiddleware(MiddlewareMixin):
         # determine whether this middleware should be applied
         # NOTE: if tracing is on but not tracing all requests, then the tracing
         # occurs through decorator functions rather than middleware
+
+        if self._tracing is None:
+            print("initialize tracing")
+            self._init_tracing()
+        
         if not self._tracing._trace_all:
+            print("tracing failed to initialize")
             return None
 
         if hasattr(settings, 'OPENTRACING_TRACED_ATTRIBUTES'):
