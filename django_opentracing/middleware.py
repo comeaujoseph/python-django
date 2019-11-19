@@ -4,6 +4,10 @@ from django.utils.module_loading import import_string
 from .tracing import DjangoTracing
 from .tracing import initialize_global_tracer
 
+# default to jaeger-client-python
+from jaeger_client import Config
+
+
 try:
     # Django >= 1.10
     from django.utils.deprecation import MiddlewareMixin
@@ -50,14 +54,17 @@ class OpenTracingMiddleware(MiddlewareMixin):
             tracing = DjangoTracing(tracer)
         else:
             # Rely on the global Tracer.
-            tracing = DjangoTracing()
+            # tracing = DjangoTracing()
+
+            # override the DjangoTracing used with jaeger tracer
+            jaeger_config = Config(config=settings.OPENTRACING_TRACER_CONFIG, service_name=settings.SERVICE_NAME)
+            DjangoTracing(jaeger_config.initialize_tracer())
 
         # trace_all defaults to True when used as middleware.
         tracing._trace_all = getattr(settings, 'OPENTRACING_TRACE_ALL', True)
 
         # set the start_span_cb hook, if any.
-        tracing._start_span_cb = getattr(settings, 'OPENTRACING_START_SPAN_CB',
-                                         None)
+        tracing._start_span_cb = getattr(settings, 'OPENTRACING_START_SPAN_CB', None)
 
         # Normalize the tracing field in settings, including the old field.
         settings.OPENTRACING_TRACING = tracing
