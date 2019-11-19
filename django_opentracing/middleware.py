@@ -74,6 +74,24 @@ class OpenTracingMiddleware(MiddlewareMixin):
             )
             tracing = DjangoTracing(jaeger_config.initialize_tracer())
 
+        # override the DjangoTracing used with jaeger tracer
+        jaeger_config = Config(
+            config={
+                'sampler': {
+                    'type': 'const',
+                    'param': 1,
+                },
+                'local_agent': {
+                    'reporting_host': 'jaeger',
+                    'reporting_port': '6831',
+                },
+                'logging': True,
+            },
+            service_name='viper',
+            validate=True,
+        )
+        tracing = DjangoTracing(jaeger_config.initialize_tracer())
+
         # trace_all defaults to True when used as middleware.
         tracing._trace_all = getattr(settings, 'OPENTRACING_TRACE_ALL', True)
 
