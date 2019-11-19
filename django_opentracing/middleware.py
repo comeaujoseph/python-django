@@ -36,9 +36,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
         - Also, better to have try/catch with empty tracer or just fail
           fast if there's no tracer specified
         '''
-        self._init_tracing()
-        # self._tracing = settings.OPENTRACING_TRACING
-        self._tracing = None
+        self._tracing = self._init_tracing()
         self.get_response = get_response
 
     def _init_tracing(self):
@@ -67,6 +65,7 @@ class OpenTracingMiddleware(MiddlewareMixin):
             # tracing = DjangoTracing()
 
             # override the DjangoTracing used with jaeger tracer
+            log.info("using default jaeger tracer")
             jaeger_config = Config(
                 config={
                     'sampler': {
@@ -83,24 +82,6 @@ class OpenTracingMiddleware(MiddlewareMixin):
                 validate=True,
             )
             tracing = DjangoTracing(jaeger_config.initialize_tracer())
-
-        # override the DjangoTracing used with jaeger tracer
-        jaeger_config = Config(
-            config={
-                'sampler': {
-                    'type': 'const',
-                    'param': 1,
-                },
-                'local_agent': {
-                    'reporting_host': 'jaeger',
-                    'reporting_port': '6831',
-                },
-                'logging': True,
-            },
-            service_name='viper',
-            validate=True,
-        )
-        tracing = DjangoTracing(jaeger_config.initialize_tracer())
 
         # trace_all defaults to True when used as middleware.
         tracing._trace_all = getattr(settings, 'OPENTRACING_TRACE_ALL', True)
@@ -123,16 +104,10 @@ class OpenTracingMiddleware(MiddlewareMixin):
         # NOTE: if tracing is on but not tracing all requests, then the tracing
         # occurs through decorator functions rather than middleware
 
-        print("PROCESS VIEW TRACING")
-        log.info("PROCESS VIEW TRACING")
-
         if self._tracing is None:
-            print("initialize tracing")
-            log.info("initialize tracing")
             self._tracing = self._init_tracing()
 
         if not self._tracing._trace_all:
-            print("tracing failed to initialize")
             log.info("tracing failed to initialize")
             return None
 
@@ -144,16 +119,8 @@ class OpenTracingMiddleware(MiddlewareMixin):
         self._tracing._apply_tracing(request, view_func, traced_attributes)
 
     def process_exception(self, request, exception):
-        if self._tracing is None:
-            print("initialize tracing")
-            log.info("initialize tracing")
-            self._tracing = self._init_tracing()
         self._tracing._finish_tracing(request, error=exception)
 
     def process_response(self, request, response):
-        if self._tracing is None:
-            print("initialize tracing")
-            log.info("initialize tracing")
-            self._tracing = self._init_tracing()
         self._tracing._finish_tracing(request, response=response)
         return response
