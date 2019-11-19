@@ -36,7 +36,6 @@ class OpenTracingMiddleware(MiddlewareMixin):
         - Also, better to have try/catch with empty tracer or just fail
           fast if there's no tracer specified
         '''
-        self.
         self._init_tracing()
         # self._tracing = settings.OPENTRACING_TRACING
         self._tracing = None
