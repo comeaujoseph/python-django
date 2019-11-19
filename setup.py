@@ -12,7 +12,7 @@ setup(
     author='Kathy Camenzind',
     author_email='kcamenzind@lightstep.com',
     description='OpenTracing support for Django applications',
-    long_description=open('README.rst').read(),
+    # long_description=open('README.rst').read(),
     packages=['django_opentracing', 'tests'],
     platforms='any',
     install_requires=[
@@ -23,7 +23,7 @@ setup(
     extras_require={
         'tests': [
             'coverage',
-            'flake8',  # see https://github.com/zheller/flake8-quotes/issues/29
+            'flake8<3',  # see https://github.com/zheller/flake8-quotes/issues/29
             'flake8-quotes',
             'mock',
         ],
