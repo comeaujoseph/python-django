@@ -23,7 +23,7 @@ setup(
     extras_require={
         'tests': [
             'coverage',
-            'flake8<3',  # see https://github.com/zheller/flake8-quotes/issues/29
+            'flake8',  # see https://github.com/zheller/flake8-quotes/issues/29
             'flake8-quotes',
             'mock',
         ],
