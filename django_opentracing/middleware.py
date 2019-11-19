@@ -35,6 +35,8 @@ class OpenTracingMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def _init_tracing(self):
+        print("_init_tracing TRACING")
+
         if getattr(settings, 'OPENTRACING_TRACER', None) is not None:
             # Backwards compatibility.
             tracing = settings.OPENTRACING_TRACER
@@ -110,6 +112,8 @@ class OpenTracingMiddleware(MiddlewareMixin):
         # determine whether this middleware should be applied
         # NOTE: if tracing is on but not tracing all requests, then the tracing
         # occurs through decorator functions rather than middleware
+
+        print("PROCESS VIEW TRACING")
 
         if self._tracing is None:
             print("initialize tracing")
