@@ -40,9 +40,6 @@ class OpenTracingMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def _init_tracing(self):
-        log.info("_init_tracing TRACING")
-        print("_init_tracing TRACING")
-
         if getattr(settings, 'OPENTRACING_TRACER', None) is not None:
             # Backwards compatibility.
             tracing = settings.OPENTRACING_TRACER
